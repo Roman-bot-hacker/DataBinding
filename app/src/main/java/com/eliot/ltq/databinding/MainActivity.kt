@@ -1,10 +1,11 @@
 package com.eliot.ltq.databinding
 
-import android.arch.lifecycle.ViewModelProviders
-import android.databinding.DataBindingUtil
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import com.eliot.ltq.databinding.databinding.ActivityMainBinding
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -15,9 +16,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         mainViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
 
-        DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
-                .apply { this.setLifecycleOwner(this@MainActivity)
-                            this.viewmodel = mainViewModel}
+        mainViewModel.currentRandomFruitName.observe(this , Observer {
+            textView.text = it
+        })
 
-    }
+        button.setOnClickListener {
+            mainViewModel.onChangeRandomFruitClick()
+        } }
+
+
+    fun <T> LiveData<T>.observe(observe:(T?)->Unit) = observe(this@MainActivity, Observer {
+        observe (it)
+    })
 }
